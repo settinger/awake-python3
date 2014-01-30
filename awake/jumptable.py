@@ -15,20 +15,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from awake import address
+from awake.config import Config
 from awake.operand import ProcAddress
 
 class JumpTable(object):
     def __init__(self, proj, addr):
         self.addr = addr
         self.targets = []
-
-        for i in range(256):
+        romconfig=Config(proj.filename, rom=True)
+        jumptables=romconfig.get(["Analysis","Jumptable-List"])
+        try:
+            size=jumptables[str(addr)]
+        except KeyError:
+            size=256
+        for i in range(size):
             a = addr.offset(i*2)
             lo = proj.rom.get(a)
             hi = proj.rom.get(a.offset(1))
             value = address.fromVirtualAndCurrent((hi<<8) | lo, addr)
 
             if not value.inPhysicalMem():
+                print "breaking"    
                 break
 
             self.targets.append(ProcAddress(value))

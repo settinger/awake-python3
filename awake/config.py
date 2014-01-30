@@ -9,7 +9,10 @@ class Config:
         if rom:
             name=name+".json"
         if not os.path.isfile(name):
-            shutil.copy("awake/defaults.json",name)
+            if rom:
+                shutil.copy("awake/romdefaults.json",name)
+            else:
+                shutil.copy("awake/defaults.json",name)
         self.config=json.load(open(name))
     def get(self,keys):
         tmp=self.config
