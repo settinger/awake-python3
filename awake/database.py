@@ -115,6 +115,10 @@ class ProcInfo(object):
         pass
 
 class Database(object):
+    """
+    SqlLite database used to store the information gathered from the ROM.
+    :param filename: Name of the database file (something.awakedb
+    """
     default_tags = {
         'IO:FF04': 'IO:DIV',
         'IO:FF05': 'IO:TIMA',
@@ -137,6 +141,10 @@ class Database(object):
     }
 
     def __init__(self, filename):
+        """
+        Setup the initial Database for the ROM, creating all the tables if they do not already exist
+        :param filename: The filename of the database to write .awakedb
+        """
         self.connection = sqlite3.connect(filename, detect_types=sqlite3.PARSE_DECLTYPES)
 
         c = self.connection.cursor()
@@ -148,6 +156,9 @@ class Database(object):
         self.connection.commit()
 
     def close(self):
+        """
+        Close the database when you have finished using it
+        """
         self.connection.close()
 
     def hasNameForAddress(self, addr):

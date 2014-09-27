@@ -16,6 +16,9 @@
 
 from awake.opcodedispatcher import OpcodeDispatcher
 
+"""
+ main_opts: All the One-byte opcodes in the Gameboy
+"""
 main_ops = """
 00011000 3 JP    v8_rel               @ read:            write: sideeffects;
 001FF000 2 JP    v8_rel, #F           @ read: #F         write: sideeffects;
@@ -92,6 +95,9 @@ main_ops = """
 01110110 1 HALT                       @ read:            write: sideeffects;
 """
 
+"""
+ cb_opts: All the Two-byte instruction codes in the GameBoy
+"""
 cb_ops = """
 00000SSS 2 RLC  #S                    @ read: #S         write: FC:(#S>>7); #S:((#S<<1)|(#S>>7)); FZ:(#S == 0); FH:0; FN:0;
 00001SSS 2 RRC  #S                    @ read: #S         write: FC:(#S & 1); #S:((#S>>1)|(#S<<7)); FZ:(#S == 0); FH:0; FN:0;
@@ -108,6 +114,12 @@ cb_ops = """
 
 class Z80Disasm(object):
     def __init__(self, proj):
+        """
+        Create the main Z80 Disassembler, Creates two OpcodeDispatchers (main and cb)
+        Main are all 1-byte opcodes and cb are the 2 byte opcodes
+        Initialises cache and next_addr_cache, although not sure the difference between the 2 caches yet
+        :param proj:
+        """
         self.proj = proj
         self.main = OpcodeDispatcher(main_ops.splitlines())
         self.cb = OpcodeDispatcher(cb_ops.splitlines())
@@ -115,6 +127,12 @@ class Z80Disasm(object):
         self.next_addr_cache = dict()
 
     def _decode(self, addr):
+        """
+        Decode the opcode at the addr specified, if the opcode value at addr is 0xCB then decode from the CB Dispatcher,
+        otherwise decode from the main Dispatcher.
+        :param addr:
+        :return:
+        """
         opcode = self.proj.rom.get(addr)
         if opcode == 0xCB:
             return self.cb.decode(self.proj, addr.offset(1))
@@ -122,6 +140,12 @@ class Z80Disasm(object):
             return self.main.decode(self.proj, addr)
 
     def decodeCache(self, addr):
+        """
+        Decode the opcode at the address specified using the cache to see if it has already been decoded previously,
+        saving the work of decoding every single time!
+        :param addr:
+        :return:
+        """
         if addr not in self.cache:
             self.cache[addr], self.next_addr_cache[addr] = self._decode(addr)
         return self.cache[addr], self.next_addr_cache[addr]

@@ -20,6 +20,9 @@ from awake.procedure import loadProcedureRange
 from awake.jumptable import JumpTable
 
 class Page(object):
+    """
+    This is a page which contains text and links (think of it like a webpage)
+    """
     has_name_form = False
 
     def __init__(self, proj, url):
@@ -38,19 +41,24 @@ class ProcedureFlowPage(Page):
         self.proc = self.proj.flow.at(self.addr)
 
     def render(self, r):
+        """
+        Writes the procedure info, name, the callers, callees etc
+        :param r:
+        """
         with r.lineAddress(self.addr), r.comment():
+            r.write("Menu: /home | /data | /jump | /proc | /bank")
             r.hline()
 
             r.startNewLine()
-            r.write("procedure flow ")
+            r.write("Procedure flow ")
             r.writeSymbol(self.addr, 'procedure')
 
             r.startNewLine()
-            r.write("  callers: ")
+            r.write("  This procedure is called by: ")
             r.writeList(ProcAddress(x) for x in sorted(self.info.callers))
 
             r.startNewLine()
-            r.write("  calls: ")
+            r.write("  This procedure calls: ")
             r.writeList(ProcAddress(x) for x in sorted(self.proc.calls()))
 
             r.hline()
