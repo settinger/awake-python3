@@ -162,6 +162,12 @@ class Database(object):
         self.connection.close()
 
     def hasNameForAddress(self, addr):
+        """
+        Have we already named this address (procudure/memory) in a tag?
+        First check if its in the default tags otherwise query the database
+        :param addr: The address to find the name of
+        :return: True if we have a name for this address, False otherwise
+        """
         if str(addr) in self.default_tags:
             return True
 
@@ -170,6 +176,12 @@ class Database(object):
             return bool(getFirst(c.fetchone()))
 
     def nameForAddress(self, addr):
+        """
+        Return the name for this address, first checking to see if it is a default tag
+        Otherwise querying the database
+        :param addr: Address to find the name of
+        :return: name of the address as a string
+        """
         if str(addr) in self.default_tags:
             return self.default_tags[str(addr)]
 
@@ -178,6 +190,11 @@ class Database(object):
             return getFirst(c.fetchone(), str(addr))
 
     def setNameForAddress(self, addr, name):
+        """
+        Either add or update an existing Tag for this address.
+        :param addr: Address to create a tag (name) for
+        :param name: The name to call this address
+        """
         c = self.connection.cursor()
         c.execute('select name from tags where addr=?', (addr,))
         if c.fetchone():
