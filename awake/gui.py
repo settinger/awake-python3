@@ -71,7 +71,7 @@ class MainWindow(tk.Toplevel):
 
         open_button = ttk.Button(toolbar, text="Open...", command=self.selectRom)
         open_button.pack(side='left')
-        
+
         self.history = History(toolbar)
         self.history.pack(side='left')
 
@@ -144,16 +144,20 @@ class MainFrame(ttk.Frame):
     def __init__(self, parent, proj=None):
         ttk.Frame.__init__(self, parent)
         self.proj = proj
+        self.address_name = AddressNameForm(self, proj.database)
+        self.address_name.setDidRenameCallback(self.reloadPage)
         self.text = SmartText(self, width=80, height=32)
         self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
         self.vsb.pack(side="right", fill="y")
+        self.address_name.pack(side="top", fill="x", expand=False)
         self.text.pack(side="left", fill="both", expand=True)
 
         self.text.configure(foreground=style['default'])
         for key, value in style.iteritems():
             self.text.tag_config(key, foreground=value)
 
+        self.url = None
         self.openSplashPage()
 
     def setLinkCallback(self, cb):
@@ -166,11 +170,14 @@ class MainFrame(ttk.Frame):
             self.text.insert('end', 'Project is not open')
             return
 
+        self.url = url
         page = dispatchUrl(self.proj, url)
         if not page:
             self.text.insert('end', '404 Not found')
         else:
             renderer = TkRenderer(self.proj.database, self.text)
+            if page.has_name_form:
+                self.address_name.setAddress(page.addr)
             page.load()
             page.render(renderer)
 
@@ -178,6 +185,9 @@ class MainFrame(ttk.Frame):
         self.text.delete(1.0, 'end')
         self.text.insert('end', 'Awake\n\n')
         self.text.insert('end', 'To begin, open a rom file.')
+
+    def reloadPage(self):
+        self.openPage(self.url)
 
 class History(ttk.Frame):
     def __init__(self, parent):
@@ -247,6 +257,42 @@ class History(ttk.Frame):
         self.forward_button.configure(state='disabled')
         self.go_button.configure(state='disabled')
         self.address_bar.configure(state='disabled')
+
+class AddressNameForm(ttk.Frame):
+    def __init__(self, parent, database, address=None):
+        ttk.Frame.__init__(self, parent)
+        self.entry = ttk.Entry(self)
+        self.entry.pack(side='left')
+        self.rename_button = ttk.Button(self, text="Rename", command=self.rename)
+        self.rename_button.pack(side='left')
+
+        self.database = database
+        self.address = address
+        self.didRenameCallback = None
+
+        self.updateNameForAddress()
+
+    def setDidRenameCallback(self, didRenameCallback):
+        self.didRenameCallback = didRenameCallback
+
+    def setAddress(self, address):
+        self.address = address
+        self.updateNameForAddress()
+
+    def updateNameForAddress(self):
+        if self.address:
+            name = self.database.nameForAddress(self.address)
+        else:
+            name = ""
+        self.entry.delete(0, "end")
+        self.entry.insert(0, name)
+
+    def rename(self):
+        name = self.entry.get()
+        self.database.setNameForAddress(self.address, name)
+
+        if self.didRenameCallback:
+            self.didRenameCallback()
 
 class SmartText(tk.Text):
     def __init__(self, parent, **kwargs):
