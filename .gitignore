@@ -1,1 +1,6 @@
 *.pyc
+awake/.idea/*
+
+roms/*
+
+.idea/

@@ -23,14 +23,22 @@ from awake.flow import ProcedureFlowCache
 from awake.rom import Rom
 
 class Project(object):
+    """
+    The main entry point into the application (called by main.py)
+    """
+
     def __init__(self, filename, config_file, config_is_object=False):
+        """
+        Create a new Project with specified Rom Filename and configuration
+        :type filename: str
+        """
         self.filename = filename
         self.rom = Rom(self.filename)
         if config_is_object:                #If configs passed as object [needed for openCopy()]
             self.config=config_file         #Use the objects
         else:                               #Otherwise, use the filenames.
             self.config = Config(config_file)
-        romconfig=Config(filename, rom=True)
+        romconfig=Config(filename, rom=True) # TODO: Doesn't this negate the purpose of the previous self.config lines?
         if romconfig.get(['Database','Auto-Upgrade']):
             updb.doUpgrade(self.filename)
         self.database = Database(self.filenameBase()+'.awakedb')
@@ -38,10 +46,17 @@ class Project(object):
         self.flow = ProcedureFlowCache(self)
 
     def filenameBase(self):
+        """
+        Get the location of the rom file (without the rom filename)
+        :return: string holding the location of the rom file
+        """
         return os.path.splitext(self.filename)[0]
 
     def close(self):
-    	self.database.close()
+    	"""
+        Close the awakedb database when you finish using it
+    	"""
+        self.database.close()
 
     def openCopy(self):
         """Create a project mirror for safe use from different thread"""

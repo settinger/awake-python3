@@ -17,17 +17,34 @@
 import struct
 
 class Rom(object):
+    """
+    Simple class which loads a Rom file on initialise and allows other classes to read
+    the bytes using read(address, lengthOfBytesToRead)
+    """
+
     def __init__(self, filename):
+        """
+        This initialises the object based on a rom file specified in the filename parameter.
+
+        :type filename: string
+        :param filename: The rom filename to load as data
+        """
         self.filename = filename
         with open(filename, 'rb') as f:
+            # Read all the bytes into an internal variable called data
             self.data = f.read()
 
-    def get(self, addr):
-        return struct.unpack('B', self.data[addr.physical()])[0]
+    def get(self, address):
+        """
+        Get a single Byte from the Rom File at location specified in address
+        :param address: Location of the Byte in the Rom File
+        :return:
+        """
+        return struct.unpack('B', self.data[address.physical()])[0]
 
-    def get_word(self, addr):
-        lo = self.get(addr)
-        hi = self.get(addr.offset(1))
+    def get_word(self, address):
+        lo = self.get(address)
+        hi = self.get(address.offset(1))
         return (hi << 8) | lo
 
     def read(self, addr, length):
@@ -37,6 +54,12 @@ class Rom(object):
         return out
 
     def numBanks(self):
+        """
+        Returns the number of Banks that this rom contains
+        By dividing the total number of bytes in the file by 16KB (the size of one bank)
+
+        :return:
+        """
         num = len(self.data) / 0x4000
         if len(self.data) % 0x4000 or not len(self.data):
             num += 1
