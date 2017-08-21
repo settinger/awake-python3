@@ -16,6 +16,7 @@
 
 from collections import defaultdict
 from awake import address, flowcontrol, procedure
+from awake.config import Config
 from awake.context import Context
 from awake.depend import DependencySet
 from awake.operand import Constant
@@ -139,7 +140,8 @@ def find_cycle_exits(graph, cycle):
     return out
 
 class FlowAnalysis(object):
-    def __init__(self, addr, graph):
+    def __init__(self, proj, addr, graph):
+        self.filename=proj.filename
         self.addr = addr
         self.graph = graph
         self.cycles = find_cycles(self.graph)
@@ -304,6 +306,13 @@ class FlowAnalysis(object):
 
         ctx = Context()
 
+        romconfig=Config(self.filename, rom=True)
+        rombank=romconfig.get(["Analysis","FlowAnalysis-Rombank"])
+        if str(hex(self.addr.virtual())) in rombank:
+            print "a"
+            ctx.setValue('ROMBANK', Constant(rombank[str(hex(self.addr.virtual()))]))
+        
+        '''
         if self.addr.virtual() == 0x0A90:
             ctx.setValue('ROMBANK', Constant(1))
         if self.addr.virtual() == 0x3CCA:
@@ -312,7 +321,8 @@ class FlowAnalysis(object):
             ctx.setValue('ROMBANK', Constant(1))
         if self.addr.virtual() in (0x0D68, 0x0E7F, 0x0EFC, 0x0EDB, 0x0C40, 0x149B, 0x15B3, 0x1732, 0x0C10):
             ctx.setValue('ROMBANK', Constant(2))
-
+        '''
+        
         if self.addr.inBankedSpace() and not self.addr.isAmbiguous():
             ctx.setValue('ROMBANK', Constant(self.addr.bank()))
 
@@ -327,7 +337,7 @@ class ProcedureFlow(object):
 
         graph = procedure.loadProcedureGraph(proj, addr)
 
-        analysis = FlowAnalysis(addr, graph)
+        analysis = FlowAnalysis(proj, addr, graph)
         self.content = analysis.analyze()
 
         self.deps = self.content.getDependencySet()

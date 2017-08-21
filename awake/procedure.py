@@ -18,62 +18,16 @@ from collections import defaultdict
 from awake import address
 from awake.instruction import TailCall
 from awake.operand import ProcAddress
+from awake.config import Config
 
-def manualJumptableLimit(addr):
-    if addr == address.fromConventional("0001:4187"):
-        return 5
-    elif addr == address.fromConventional("0001:633D"):
-        return 2
-    elif addr == address.fromConventional("0003:4976"):
-        return 37  # very weird jumptable...
-    elif addr == address.fromConventional("0018:7175"):
-        return 5
-    elif addr == address.fromConventional("0017:430C"):
-        return 6
-    elif addr == address.fromConventional("0002:6C1F"):
-        return 3
-    elif addr == address.fromConventional("0006:7383"):
-        return 3
-    elif addr == address.fromConventional("0006:5824"):
-        return 5  # weird jumptable
-    elif addr == address.fromConventional("0018:65B3"):
-        return 4
-    elif addr == address.fromConventional("0019:4942"):
-        return 4
-    elif addr == address.fromConventional("0015:78E1"):
-        return 2
-    elif addr == address.fromConventional("0005:62CD"):
-        return 5
-    elif addr == address.fromConventional("0019:4CB3"):
-        return 2
-    elif addr == address.fromConventional("0005:461E"):
-        return 4
-    elif addr == address.fromConventional("0005:4169"):
-        return 5
-    elif addr == address.fromConventional("0019:5B29"):
-        return 2
-    elif addr == address.fromConventional("0004:4B52"):
-        return 2
-    elif addr == address.fromConventional("0004:6802"):
-        return 2
-    elif addr == address.fromConventional("0004:6081"):
-        return 4
-    elif addr == address.fromConventional("0004:6EB6"):
-        return 13
-    elif addr == address.fromConventional("0006:74C5"):
-        return 2
-    elif addr == address.fromConventional("0004:76B4"):
-        return 6
-    elif addr == address.fromConventional("0004:4E8C"):
-        return 4
-    elif addr == address.fromConventional("0005:7210"):
-        return 5
-
-    # AGES
-    elif addr == address.fromConventional("0007:5E96"):
-        return 7
-
-    # BIG SWITCH: bad 0003:5A35
+def manualJumptableLimit(proj, addr):
+    romconfig=Config(proj.filename, rom=True)
+    jumptables=romconfig.get(["Analysis","Jumptable-List"])
+    try:
+        return jumptables[str(addr)]
+    except KeyError:
+        raise ValueError("Unknown jumptable at "+addr+"!")
+    
 
 class ProcedureRangeAnalysis(object):
 
@@ -121,7 +75,7 @@ class ProcedureRangeAnalysis(object):
 
     def tryExpandJumptable(self, proj, jumptable_addr):
 
-        manual_limit = manualJumptableLimit(jumptable_addr)
+        manual_limit = manualJumptableLimit(proj, jumptable_addr)
         if manual_limit and self.jumptable_sizes[jumptable_addr] >= manual_limit:
             print("INFO: manual jumptable limit", jumptable_addr)
             self.suspicious_switch = True
