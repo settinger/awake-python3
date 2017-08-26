@@ -22,6 +22,20 @@ class DebugSymbols(object):
     to lookup the symbols by address
     """
 
+    """
+    This creates a debug symbols object, backed by the file specified in the filename parameter.
+
+    :type filename: string
+    :param filename: The rom filename to load as data
+    :return a new DebugSymbol object on success, or None on failure (for instance if the file doesn't exist)
+    """
+    def __new__(cls, filename, exclude_pattern=None):
+        if os.path.isfile(filename):
+            return super(DebugSymbols, cls).__new__(cls, filename, exclude_pattern=None)
+        else:
+            print "DebugSymbols: file '" + filename + "' not found."
+            return None
+
     def __init__(self, filename, exclude_pattern=None):
         """
         This initialises the debug symbols file specified in the filename parameter.
@@ -30,8 +44,6 @@ class DebugSymbols(object):
         :param filename: The rom filename to load as data
         :return a DebugSymbol object on success, or None on failure (for instance if the file doesn't exist)
         """
-        if not os.path.isfile(filename):
-            return None
         self.symbols = self._readSymfile(filename, exclude_pattern)
 
     @staticmethod
