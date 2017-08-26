@@ -197,10 +197,14 @@ class Database(object):
         """
         c = self.connection.cursor()
         c.execute('select name from tags where addr=?', (addr,))
-        if c.fetchone():
+        existing_name = c.fetchone()
+        if existing_name and name:
             print('updating')
             c.execute('update tags set name=? where addr=?', (name, addr))
-        else:
+        elif existing_name and not name:
+            print('deleting')
+            c.execute('delete from tags where addr=?', (addr,))
+        elif name:
             print('new')
             c.execute('insert into tags (addr, name) values (?, ?)', (addr, name))
         c.close()
