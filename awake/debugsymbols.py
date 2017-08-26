@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
+import os, re
 
 class DebugSymbols(object):
     """
@@ -22,7 +22,7 @@ class DebugSymbols(object):
     to lookup the symbols by address
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename, exclude_pattern=None):
         """
         This initialises the debug symbols file specified in the filename parameter.
 
@@ -32,26 +32,31 @@ class DebugSymbols(object):
         """
         if not os.path.isfile(filename):
             return None
-        self.symbols = self._readSymfile(filename)
+        self.symbols = self._readSymfile(filename, exclude_pattern)
 
     @staticmethod
-    def _readSymfile(path):
-      """
-      Return a dict of labels extracted from an rgbds .sym file, sorted by bank.
-      """
-      symbols = {}
-      for line in open(path):
-          line = line.strip().split(';')[0]
-          if line:
-              bank_address, label = line.split(' ')[:2]
-              bank_str, address_str = bank_address.split(':')
-              # Ensure bank and memory address have leading zeros
-              address = bank_str.rjust(4, '0') + ':' + address_str.rjust(4, '0')
-              symbols[address] = label
-      return symbols
+    def _readSymfile(path, exclude_pattern=None):
+        """
+        Return a dict of labels extracted from an rgbds .sym file, sorted by bank.
+        """
+        symbols = {}
+        exclude = re.compile(exclude_pattern) if exclude_pattern else None
+
+        for line in open(path):
+            line = line.strip().split(';')[0]
+            if line:
+                bank_address, label = line.split(' ')[:2]
+                bank_str, address_str = bank_address.split(':')
+                # Ensure bank and memory address have leading zeros
+                address = bank_str.rjust(4, '0') + ':' + address_str.rjust(4, '0')
+
+                is_excluded = exclude and exclude.match(label)
+                if not is_excluded:
+                    symbols[address] = label
+        return symbols
 
     def insertTags(self, project):
-      for address in self.symbols:
-          project.database.setNameForAddress(address, self.symbols[address])
+        for address in self.symbols:
+            project.database.setNameForAddress(address, self.symbols[address])
 
 

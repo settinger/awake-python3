@@ -43,7 +43,7 @@ class Project(object):
         if romconfig.get(['Database','Auto-Upgrade']):
             updb.doUpgrade(self.filename)
         self.database = Database(self.filenameBase()+'.awakedb')
-        self.debug_symbols = DebugSymbols(self.filenameBase()+'.sym')
+        self.debug_symbols = DebugSymbols(self.filenameBase()+'.sym', exclude_pattern='^label_*')
         if self.debug_symbols:
           self.debug_symbols.insertTags(self)
         self.disasm = Z80Disasm(self)
