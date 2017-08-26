@@ -21,6 +21,7 @@ from awake.disasm import Z80Disasm
 from awake.config import Config
 from awake.flow import ProcedureFlowCache
 from awake.rom import Rom
+from awake.debugsymbols import DebugSymbols
 
 class Project(object):
     """
@@ -42,6 +43,9 @@ class Project(object):
         if romconfig.get(['Database','Auto-Upgrade']):
             updb.doUpgrade(self.filename)
         self.database = Database(self.filenameBase()+'.awakedb')
+        self.debug_symbols = DebugSymbols(self.filenameBase()+'.sym')
+        if self.debug_symbols:
+          self.debug_symbols.insertTags(self)
         self.disasm = Z80Disasm(self)
         self.flow = ProcedureFlowCache(self)
 
