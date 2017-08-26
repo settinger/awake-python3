@@ -26,8 +26,8 @@ def manualJumptableLimit(proj, addr):
     try:
         return jumptables[str(addr)]
     except KeyError:
-        raise ValueError("Unknown jumptable at "+addr+"!")
-    
+        return None
+
 
 class ProcedureRangeAnalysis(object):
 
