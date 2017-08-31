@@ -72,6 +72,9 @@ class MainWindow(tk.Toplevel):
         open_button = ttk.Button(toolbar, text="Open...", command=self.selectRom)
         open_button.pack(side='left')
 
+        self.debug_symbols_button = ttk.Button(toolbar, text="Import debug symbols...", command=self.importDebugSymbols)
+        self.debug_symbols_button.pack(side='left')
+
         self.history = History(toolbar)
         self.history.pack(side='left')
 
@@ -112,6 +115,7 @@ class MainWindow(tk.Toplevel):
             self.history.navigate(url)
 
         if not self.proj:
+            self.debug_symbols_button.configure(state='disabled')
             self.export_button.configure(state='disabled')
             self.server_button.configure(state='disabled')
             self.history.disable()
@@ -132,6 +136,17 @@ class MainWindow(tk.Toplevel):
         fresh = MainWindow(getTkRoot(), filename)
         fresh.geometry(self.geometry())
         self.destroy()
+
+    def importDebugSymbols(self):
+        if not self.proj:
+            return
+
+        filename = askopenfilename(title="Select debug symbols", parent=self, filetypes=[('RGBDS debug symbols (*.sym)', '*.sym'), ('All files', '*.*')])
+        if not filename:
+            return
+
+        self.proj.importDebugSymbols(filename)
+        self.main.reloadPage()
 
     def wait(self):
         self.wait_window(self)

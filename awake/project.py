@@ -43,11 +43,9 @@ class Project(object):
         if romconfig.get(['Database','Auto-Upgrade']):
             updb.doUpgrade(self.filename)
         self.database = Database(self.filenameBase()+'.awakedb')
-        self.debug_symbols = DebugSymbols(self.filenameBase()+'.sym', exclude_pattern='^label_*')
-        if self.debug_symbols:
-          self.debug_symbols.insertTags(self)
         self.disasm = Z80Disasm(self)
         self.flow = ProcedureFlowCache(self)
+        self.debug_symbols = None
 
     def filenameBase(self):
         """
@@ -55,6 +53,12 @@ class Project(object):
         :return: string holding the location of the rom file
         """
         return os.path.splitext(self.filename)[0]
+
+    def importDebugSymbols(self, filename):
+        self.debug_symbols = DebugSymbols(filename, exclude_pattern='^label_*')
+        if self.debug_symbols:
+            for (address, label) in self.debug_symbols.symbols.items():
+                self.database.setNameForAddress(address, label)
 
     def close(self):
     	"""

@@ -65,8 +65,3 @@ class DebugSymbols(object):
                     symbols[str(normalized_address)] = label
         return symbols
 
-    def insertTags(self, project):
-        for address in self.symbols:
-            project.database.setNameForAddress(address, self.symbols[address])
-
-
