@@ -163,7 +163,7 @@ class Database(object):
 
     def hasNameForAddress(self, addr):
         """
-        Have we already named this address (procudure/memory) in a tag?
+        Have we already named this address (procedure/memory) in a tag?
         First check if its in the default tags otherwise query the database
         :param addr: The address to find the name of
         :return: True if we have a name for this address, False otherwise
