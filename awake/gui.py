@@ -144,7 +144,7 @@ class MainFrame(ttk.Frame):
     def __init__(self, parent, proj=None):
         ttk.Frame.__init__(self, parent)
         self.proj = proj
-        self.address_name = AddressNameForm(self, proj.database)
+        self.address_name = AddressNameForm(self, self.proj)
         self.address_name.setDidRenameCallback(self.reloadPage)
         self.text = SmartText(self, width=80, height=32)
         self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.text.yview)
@@ -259,18 +259,19 @@ class History(ttk.Frame):
         self.address_bar.configure(state='disabled')
 
 class AddressNameForm(ttk.Frame):
-    def __init__(self, parent, database, address=None):
+    def __init__(self, parent, project=None, address=None):
         ttk.Frame.__init__(self, parent)
         self.entry = ttk.Entry(self)
         self.entry.pack(side='left')
         self.rename_button = ttk.Button(self, text="Rename", command=self.rename)
         self.rename_button.pack(side='left')
 
-        self.database = database
+        self.project = project
         self.address = address
         self.didRenameCallback = None
 
-        self.updateNameForAddress()
+        if project:
+            self.updateNameForAddress()
 
     def setDidRenameCallback(self, didRenameCallback):
         self.didRenameCallback = didRenameCallback
@@ -281,7 +282,7 @@ class AddressNameForm(ttk.Frame):
 
     def updateNameForAddress(self):
         if self.address:
-            name = self.database.nameForAddress(self.address)
+            name = self.project.database.nameForAddress(self.address)
         else:
             name = ""
         self.entry.delete(0, "end")
@@ -289,7 +290,7 @@ class AddressNameForm(ttk.Frame):
 
     def rename(self):
         name = self.entry.get()
-        self.database.setNameForAddress(self.address, name)
+        self.project.database.setNameForAddress(self.address, name)
 
         if self.didRenameCallback:
             self.didRenameCallback()
