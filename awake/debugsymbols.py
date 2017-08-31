@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, re
+from awake import address
 
 class DebugSymbols(object):
     """
@@ -57,14 +58,11 @@ class DebugSymbols(object):
         for line in open(path):
             line = line.strip().split(';')[0]
             if line:
-                bank_address, label = line.split(' ')[:2]
-                bank_str, address_str = bank_address.split(':')
-                # Ensure bank and memory address have leading zeros
-                address = bank_str.rjust(4, '0') + ':' + address_str.rjust(4, '0')
-
-                is_excluded = exclude and exclude.match(label)
-                if not is_excluded:
-                    symbols[address] = label
+                sym_address, label = line.split(' ')[:2]
+                is_label_excluded = exclude and exclude.match(label)
+                if not is_label_excluded:
+                    normalized_address = address.fromConventional(sym_address)
+                    symbols[str(normalized_address)] = label
         return symbols
 
     def insertTags(self, project):
