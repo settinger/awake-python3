@@ -120,24 +120,68 @@ class Database(object):
     :param filename: Name of the database file (something.awakedb
     """
     default_tags = {
-        'IO:FF04': 'IO:DIV',
-        'IO:FF05': 'IO:TIMA',
-        'IO:FF06': 'IO:TMA',
-        'IO:FF07': 'IO:TAC',
-        'IO:FF40': 'IO:LCDC',
-        'IO:FF41': 'IO:STAT',
-        'IO:FF42': 'IO:SCY',
-        'IO:FF43': 'IO:SCX',
-        'IO:FF44': 'IO:LY',
-        'IO:FF45': 'IO:LYC',
-        'IO:FF46': 'IO:DMA',
-        'IO:FF47': 'IO:BGP',
-        'IO:FF48': 'IO:OBP0',
-        'IO:FF49': 'IO:OBP1',
-        'IO:FF4A': 'IO:WY',
-        'IO:FF4B': 'IO:WX',
-        'IO:FFFF': 'IO:IE',
-        'IO:FF0F': 'IO:IF',
+        'IO:FF00': 'IO:JOYP',  # (Joypad R/W)
+        'IO:FF01': 'IO:SB',    # Serial transfer data (R/W)
+        'IO:FF02': 'IO:SC',    # Serial transfer control (R/W)
+        'IO:FF04': 'IO:DIV',   # Divider register (R/W)
+        'IO:FF05': 'IO:TIMA',  # Timer counter (R/W)
+        'IO:FF06': 'IO:TMA',   # Timer modulo (R/W)
+        'IO:FF07': 'IO:TAC',   # Timer control (R/W)
+        'IO:FF0F': 'IO:IF',    # Interrupt Flag (R/W)
+        'IO:FF10': 'IO:NR10',  # Channel 1 Sweep register (R/W)
+        'IO:FF11': 'IO:NR11',  # Channel 1 Sound length/Wave pattern duty (R/W)
+        'IO:FF12': 'IO:NR12',  # Channel 1 Volume Envelope (R/W)
+        'IO:FF13': 'IO:NR13',  # Channel 1 Frequency lo (Write Only)
+        'IO:FF14': 'IO:NR14',  # Channel 1 Frequency hi (R/W)
+        'IO:FF16': 'IO:NR21',  # Channel 2 Sound Length/Wave Pattern Duty (R/W)
+        'IO:FF17': 'IO:NR22',  # Channel 2 Volume Envelope (R/W)
+        'IO:FF18': 'IO:NR23',  # Channel 2 Frequency lo data (W)
+        'IO:FF19': 'IO:NR24',  # Channel 2 Frequency hi data (R/W)
+        'IO:FF1A': 'IO:NR30',  # Channel 3 Sound on/off (R/W)
+        'IO:FF1B': 'IO:NR31',  # Channel 3 Sound Length
+        'IO:FF1C': 'IO:NR32',  # Channel 3 Select output level (R/W)
+        'IO:FF1D': 'IO:NR33',  # Channel 3 Frequency's lower data (W)
+        'IO:FF1E': 'IO:NR34',  # Channel 3 Frequency's higher data (R/W)
+        'IO:FF20': 'IO:NR41',  # Channel 4 Sound Length (R/W)
+        'IO:FF21': 'IO:NR42',  # Channel 4 Volume Envelope (R/W)
+        'IO:FF22': 'IO:NR43',  # Channel 4 Polynomial Counter (R/W)
+        'IO:FF23': 'IO:NR44',  # Channel 4 Counter/consecutive; Inital (R/W)
+        'IO:FF24': 'IO:NR50',  # Channel control / ON-OFF / Volume (R/W)
+        'IO:FF25': 'IO:NR51',  # Selection of Sound output terminal (R/W)
+        'IO:FF26': 'IO:NR52',  # Sound on/off
+        'IO:FF40': 'IO:LCDC',  # LCD Control (R/W)
+        'IO:FF41': 'IO:STAT',  # LCD Status (R/W)
+        'IO:FF42': 'IO:SCY',   # Scroll Y (R/W)
+        'IO:FF43': 'IO:SCX',   # Scroll X (R/W)
+        'IO:FF44': 'IO:LY',    # LCDC Y-coordinate (R)
+        'IO:FF45': 'IO:LYC',   # LY Compare (R/W)
+        'IO:FF46': 'IO:DMA',   # DMA Transfert and Start Address (W)
+        'IO:FF47': 'IO:BGP',   # BG Palette Data (R/W) - Non CGB Mode Only
+        'IO:FF48': 'IO:OBP0',  # Object Palette 0 Data (R/W) - Non CGB Mode Only
+        'IO:FF49': 'IO:OBP1',  # Object Palette 1 Data (R/W) - Non CGB Mode Only
+        'IO:FF4A': 'IO:WY',    # Window Y Position (R/W)
+        'IO:FF4B': 'IO:WX',    # Window X Position minus 7 (R/W)
+        'IO:FF4D': 'IO:KEY1',  # Prepare Speed Switch - CGB Mode Only
+        'IO:FF4F': 'IO:VBK',   # VRAM Bank - CGB Mode Only
+        'IO:FF51': 'IO:HDMA1', # New DMA Source, High - CGB Mode Only
+        'IO:FF52': 'IO:HDMA2', # New DMA Source, Low - CGB Mode Only
+        'IO:FF53': 'IO:HDMA3', # New DMA Destination, High - CGB Mode Only
+        'IO:FF54': 'IO:HDMA4', # New DMA Destination, Low - CGB Mode Only
+        'IO:FF55': 'IO:HDMA5', # New DMA Length/Mode/Start - CGB Mode Only
+        'IO:FF56': 'IO:RP',    # Infrared Communications Port - CGB Mode Only
+        'IO:FF68': 'IO:BGPI',  # Background Palette Index - CGB Mode Only
+        'IO:FF69': 'IO:BGPD',  # Background Palette Data - CGB Mode Only
+        'IO:FF6A': 'IO:OBPI',  # Sprite Palette Index - CGB Mode Only
+        'IO:FF6B': 'IO:OBPD',  # Sprite Palette Data - CGB Mode Only
+        'IO:FF6C': 'IO:UNKN1', # (FEh) Bit 0 (Read/Write) - CGB Mode Only
+        'IO:FF70': 'IO:SVBK',  # WRAM Bank - CGB Mode Only
+        'IO:FF72': 'IO:UNKN2', # (00h) - Bit 0-7 (Read/Write)
+        'IO:FF73': 'IO:UNKN3', # (00h) - Bit 0-7 (Read/Write)
+        'IO:FF74': 'IO:UNKN4', # (00h) - Bit 0-7 (Read/Write) - CGB Mode Only
+        'IO:FF75': 'IO:UNKN5', # (8Fh) - Bit 4-6 (Read/Write)
+        'IO:FF76': 'IO:UNKN6', # (00h) - Always 00h (Read Only)
+        'IO:FF77': 'IO:UNKN7', # (00h) - Always 00h (Read Only)
+        'IO:FFFF': 'IO:IE'     # Interrupt Enable (R/W)
     }
 
     def __init__(self, filename):
