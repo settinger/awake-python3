@@ -8,7 +8,7 @@ parser.add_argument('file', nargs='?', default='roms/blue.gb')
 
 def getDB(filename):
     split=os.path.splitext(filename)
-    if split[1]=='.gb':
+    if split[1]=='.gb' or split[1]=='.gbc':
         return split[0]+'.awakedb'
     if split[1]=='':
         return split[0]+'.awakedb'
