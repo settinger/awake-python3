@@ -80,10 +80,13 @@ class Renderer(object):
         self.add(signature, 'op-signature')
 
     def label(self, addr, signature=None):
+        default_address_name = 'label_' + str(addr)
+        address_name = self.database.nameForAddress(addr) or default_address_name
+
         self.add('\n')
         self.add(str(addr), 'line-address')
         self.add(' ')
-        self.write('label_'+str(addr)+':', 'label')
+        self.write(address_name + ':', 'label')
         if signature:
             self.instructionSignature(signature)
 
