@@ -55,6 +55,7 @@ class Project(object):
         return os.path.splitext(self.filename)[0]
 
     def importDebugSymbols(self, filename):
+        print "Importing debug symbols. This may take a minute..."
         self.debug_symbols = DebugSymbols(filename, exclude_pattern='^label_*')
         if self.debug_symbols:
             for (address, label) in self.debug_symbols.symbols.items():
