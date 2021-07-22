@@ -54,7 +54,7 @@ class OpcodeDispatcher(object):
         """
         entry = proj.rom.get(addr) #get the opcode byte from the rom at address addr
         if entry not in self.dispatchTable:
-            print('WARN: bad opcode', addr)
+            print(('WARN: bad opcode', addr))
             return BadOpcode([entry], addr), None
         decoder = self.dispatchTable[entry]
         opcodes = proj.rom.read(addr, decoder.length()) #read the whole opcode and the arguments

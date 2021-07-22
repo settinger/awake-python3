@@ -157,7 +157,7 @@ class Block(Instruction):
     def __bool__(self):
         return bool(self.contents)
         
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.contents)
 
     """Heuristic code complexity inside block"""

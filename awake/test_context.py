@@ -41,7 +41,7 @@ class Test(unittest.TestCase):
         c.setValue('B', operand.Constant(1))
         self.assertFalse(c.hasValue('A'))
         self.assertTrue(c.hasValue('B'))
-        self.assertEquals(c.getValue('B').value, 1)
+        self.assertEqual(c.getValue('B').value, 1)
 
     def testLoadInstructions(self):
         context = Context()
@@ -53,8 +53,8 @@ class Test(unittest.TestCase):
         a = a.optimizedWithContext(context)
         b = b.optimizedWithContext(context)
         c = c.optimizedWithContext(context)
-        self.assertEquals(b.source.target.value, 0xFFFF)
-        self.assertEquals(c.source.value, 1)
+        self.assertEqual(b.source.target.value, 0xFFFF)
+        self.assertEqual(c.source.value, 1)
 
     def testDependencies(self):
         q = instruction.LoadInstruction('LD', placeholders.HL, operand.Constant(0xFFFF))
@@ -63,13 +63,13 @@ class Test(unittest.TestCase):
         c = instruction.LoadInstruction('LD', placeholders.B, placeholders.deref_HL)
         deps = set()
         deps = c.getDependencies(deps)
-        self.assertEquals(regutil.joinRegisters(deps), set(['mem', 'HL']))
+        self.assertEqual(regutil.joinRegisters(deps), set(['mem', 'HL']))
         deps = b.getDependencies(deps)
-        self.assertEquals(regutil.joinRegisters(deps), set(['mem', 'HL', 'A']))
+        self.assertEqual(regutil.joinRegisters(deps), set(['mem', 'HL', 'A']))
         deps = a.getDependencies(deps)
-        self.assertEquals(regutil.joinRegisters(deps), set(['mem', 'HL']))
+        self.assertEqual(regutil.joinRegisters(deps), set(['mem', 'HL']))
         deps = q.getDependencies(deps)
-        self.assertEquals(regutil.joinRegisters(deps), set(['mem']))
+        self.assertEqual(regutil.joinRegisters(deps), set(['mem']))
 
 if __name__ == "__main__":
     unittest.main()

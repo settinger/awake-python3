@@ -40,7 +40,7 @@ class Rom(object):
         :param address: Location of the Byte in the Rom File
         :return:
         """
-        return struct.unpack('B', self.data[address.physical()])[0]
+        return struct.unpack('B', bytes([self.data[address.physical()]]))[0]
 
     def get_word(self, address):
         lo = self.get(address)

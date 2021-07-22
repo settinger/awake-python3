@@ -19,24 +19,24 @@ def getDB(filename):
 
 def upgradeDatabase(name):
     ver=dbv.detectVersion(name)
-    for i in xrange(LATEST_VERSION-ver):
+    for i in range(LATEST_VERSION-ver):
         dbu.upgrade(name)
     
 def doUpgrade(name):
     filename=getDB(name)
     ver=dbv.detectVersion(filename)
     if ver==0:
-        print "Unknown database version!"
-        print "Skipping upgrade check."
+        print("Unknown database version!")
+        print("Skipping upgrade check.")
         return
-    print "Database is version",ver
-    print "Latest version is",LATEST_VERSION
+    print("Database is version",ver)
+    print("Latest version is",LATEST_VERSION)
     if ver!=LATEST_VERSION:
         shutil.copy(filename,filename+".ver"+str(ver)+".bak")
         upgradeDatabase(filename)
-        print "Done!"
+        print("Done!")
     else:
-        print "Nothing to do!"
+        print("Nothing to do!")
     
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -44,4 +44,4 @@ if __name__ == '__main__':
     if args.file:
         doUpgrade(args.file)
     else:
-        print "No rom file selected."
+        print("No rom file selected.")

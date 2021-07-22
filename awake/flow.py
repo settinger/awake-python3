@@ -309,7 +309,7 @@ class FlowAnalysis(object):
         romconfig=Config(self.filename, rom=True)
         rombank=romconfig.get(["Analysis","FlowAnalysis-Rombank"])
         if str(hex(self.addr.virtual())) in rombank:
-            print "a"
+            print("a")
             ctx.setValue('ROMBANK', Constant(rombank[str(hex(self.addr.virtual()))]))
         
         '''
@@ -403,7 +403,7 @@ class ProcedureFlow(object):
             x.addToIndex(index)
 
 def update_info(proc, database):
-    print 'Updating info for', str(proc.addr)
+    print('Updating info for', str(proc.addr))
     info = database.procInfo(proc.addr)
     info.depset = proc.getDependencySet()
     info.has_switch = proc.has_switch

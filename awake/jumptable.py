@@ -35,7 +35,7 @@ class JumpTable(object):
             value = address.fromVirtualAndCurrent((hi<<8) | lo, addr)
 
             if not value.inPhysicalMem():
-                print "breaking"    
+                print("breaking")    
                 break
 
             self.targets.append(ProcAddress(value))

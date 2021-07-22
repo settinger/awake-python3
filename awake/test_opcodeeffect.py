@@ -29,15 +29,15 @@ class Test(unittest.TestCase):
 
         e = OpcodeEffect('read: A HL write: BC HL')
         reads, writes, values = e.filled(None)
-        self.assertEquals(reads, set(['A', 'H', 'L']))
-        self.assertEquals(writes, set(['B', 'C', 'H', 'L']))
+        self.assertEqual(reads, set(['A', 'H', 'L']))
+        self.assertEqual(writes, set(['B', 'C', 'H', 'L']))
         self.assertFalse(values)
 
         e = OpcodeEffect('read: FC FN write: FN:0 FZ mem FC:1')
         reads, writes, values = e.filled(None)
-        self.assertEquals(reads, set(['FC', 'FN']))
-        self.assertEquals(writes, set(['FN', 'FZ', 'FC', 'mem']))
-        self.assertEquals(values, dict(FN='0', FC='1'))
+        self.assertEqual(reads, set(['FC', 'FN']))
+        self.assertEqual(writes, set(['FN', 'FZ', 'FC', 'mem']))
+        self.assertEqual(values, dict(FN='0', FC='1'))
 
     def testFill(self):
 
@@ -45,9 +45,9 @@ class Test(unittest.TestCase):
 
         e = OpcodeEffect('read: #R #F write: #S #Z #F:0')
         reads, writes, values = e.filled(params)
-        self.assertEquals(reads, set(['B', 'C', 'FZ', 'H', 'L']))
-        self.assertEquals(writes, set(['mem', 'B', 'FZ']))
-        self.assertEquals(values, dict(FZ='0'))
+        self.assertEqual(reads, set(['B', 'C', 'FZ', 'H', 'L']))
+        self.assertEqual(writes, set(['mem', 'B', 'FZ']))
+        self.assertEqual(values, dict(FZ='0'))
 
 
 if __name__ == "__main__":

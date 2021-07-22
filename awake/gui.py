@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
-import Tkinter as tk
-import ttk
-from tkFileDialog import askopenfilename
+import tkinter as tk
+import tkinter.ttk
+from tkinter.filedialog import askopenfilename
 from awake.config import Config
 from awake.export import ExportDialog
 from awake.project import Project
@@ -61,26 +61,26 @@ class MainWindow(tk.Toplevel):
         self.panes = tk.PanedWindow(self, orient='horizontal', sashwidth=10)
         self.panes.pack(side='top', fill='both', expand=True)
 
-        self.tool_pane = ttk.Frame(self.panes)
+        self.tool_pane = tkinter.ttk.Frame(self.panes)
         self.panes.add(self.tool_pane)
-        self.main_pane = ttk.Frame(self.panes)
+        self.main_pane = tkinter.ttk.Frame(self.panes)
         self.panes.add(self.main_pane)
 
-        toolbar = ttk.Frame(self.main_pane)
+        toolbar = tkinter.ttk.Frame(self.main_pane)
         toolbar.pack(side='top', fill='x', padx=5, pady=5)
 
-        open_button = ttk.Button(toolbar, text="Open...", command=self.selectRom)
+        open_button = tkinter.ttk.Button(toolbar, text="Open...", command=self.selectRom)
         open_button.pack(side='left')
 
-        self.debug_symbols_button = ttk.Button(toolbar, text="Import debug symbols...", command=self.importDebugSymbols)
+        self.debug_symbols_button = tkinter.ttk.Button(toolbar, text="Import debug symbols...", command=self.importDebugSymbols)
         self.debug_symbols_button.pack(side='left')
 
         self.history = History(toolbar)
         self.history.pack(side='left')
 
-        self.server_button = ttk.Button(toolbar, text="Start server...", width=15, command=self.showServer)
+        self.server_button = tkinter.ttk.Button(toolbar, text="Start server...", width=15, command=self.showServer)
         self.server_button.pack(side='right')
-        self.export_button = ttk.Button(toolbar, text="Export...", width=10, command=self.showExport)
+        self.export_button = tkinter.ttk.Button(toolbar, text="Export...", width=10, command=self.showExport)
         self.export_button.pack(side='right')
 
         self.main = MainFrame(self.main_pane, self.proj)
@@ -155,21 +155,21 @@ class MainWindow(tk.Toplevel):
         self.destroy()
         self.parent.destroy()
 
-class MainFrame(ttk.Frame):
+class MainFrame(tkinter.ttk.Frame):
     def __init__(self, parent, proj=None):
-        ttk.Frame.__init__(self, parent)
+        tkinter.ttk.Frame.__init__(self, parent)
         self.proj = proj
         self.address_name = AddressNameForm(self, self.proj)
         self.address_name.setDidRenameCallback(self.reloadPage)
         self.text = SmartText(self, width=80, height=32)
-        self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.text.yview)
+        self.vsb = tkinter.ttk.Scrollbar(self, orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
         self.vsb.pack(side="right", fill="y")
         self.address_name.pack(side="top", fill="x", expand=False)
         self.text.pack(side="left", fill="both", expand=True)
 
         self.text.configure(foreground=style['default'])
-        for key, value in style.iteritems():
+        for key, value in style.items():
             self.text.tag_config(key, foreground=value)
 
         self.url = None
@@ -204,18 +204,18 @@ class MainFrame(ttk.Frame):
     def reloadPage(self):
         self.openPage(self.url)
 
-class History(ttk.Frame):
+class History(tkinter.ttk.Frame):
     def __init__(self, parent):
-        ttk.Frame.__init__(self, parent)
-        self.back_button = ttk.Button(self, text="<", width=1, state='disabled', command=self.back)
+        tkinter.ttk.Frame.__init__(self, parent)
+        self.back_button = tkinter.ttk.Button(self, text="<", width=1, state='disabled', command=self.back)
         self.back_button.pack(side='left')
-        self.forward_button = ttk.Button(self, text=">", width=1, state='disabled', command=self.forward)
+        self.forward_button = tkinter.ttk.Button(self, text=">", width=1, state='disabled', command=self.forward)
         self.forward_button.pack(side='left')
         self.address_var = tk.StringVar()
-        self.address_bar = ttk.Entry(self, textvariable=self.address_var)
+        self.address_bar = tkinter.ttk.Entry(self, textvariable=self.address_var)
         self.address_bar.pack(side='left')
         self.address_bar.bind("<Return>", self.go)
-        self.go_button = ttk.Button(self, text="Go", width=3, command=self.go)
+        self.go_button = tkinter.ttk.Button(self, text="Go", width=3, command=self.go)
         self.go_button.pack(side='left')
 
         self.back_stack = []
@@ -273,12 +273,12 @@ class History(ttk.Frame):
         self.go_button.configure(state='disabled')
         self.address_bar.configure(state='disabled')
 
-class AddressNameForm(ttk.Frame):
+class AddressNameForm(tkinter.ttk.Frame):
     def __init__(self, parent, project=None, address=None):
-        ttk.Frame.__init__(self, parent)
-        self.entry = ttk.Entry(self)
+        tkinter.ttk.Frame.__init__(self, parent)
+        self.entry = tkinter.ttk.Entry(self)
         self.entry.pack(side='left')
-        self.rename_button = ttk.Button(self, text="Rename", command=self.rename)
+        self.rename_button = tkinter.ttk.Button(self, text="Rename", command=self.rename)
         self.rename_button.pack(side='left')
 
         self.project = project

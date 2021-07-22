@@ -28,16 +28,16 @@ class Test(unittest.TestCase):
         ctx.setValue('A', operand.Constant(1))
         e = expression.parse("1+A")
         e = e.optimizedWithContext(ctx)
-        self.assertEquals(e.value, 2)
+        self.assertEqual(e.value, 2)
 
     def testBlah(self):
         e = expression.parse("(A>>7)<<1")
         e = e.optimizedWithContext(context.Context())
-        self.assertEquals(str(e), "(A >> 6) & 2")
+        self.assertEqual(str(e), "(A >> 6) & 2")
 
         e = expression.parse("(A>>4)<<6")
         e = e.optimizedWithContext(context.Context())
-        self.assertEquals(str(e), "(A << 2) & 0xc0")
+        self.assertEqual(str(e), "(A << 2) & 0xc0")
 
 if __name__ == "__main__":
     unittest.main()

@@ -30,14 +30,14 @@ class DebugSymbols(object):
     :param filename: The rom filename to load as data
     :return a new DebugSymbol object on success, or None on failure (for instance if the file doesn't exist)
     """
-    def __new__(cls, filename, exclude_pattern=None):
+    def __new__(cls, filename, exclude_pattern=None, *args, **kwargs):
         if os.path.isfile(filename):
-            return super(DebugSymbols, cls).__new__(cls, filename, exclude_pattern=None)
+            return super(DebugSymbols, cls).__new__(cls, *args, **kwargs)
         else:
-            print "DebugSymbols: file '" + filename + "' not found."
+            print("DebugSymbols: file '" + filename + "' not found.")
             return None
 
-    def __init__(self, filename, exclude_pattern=None):
+    def __init__(self, filename, exclude_pattern=None, *args, **kwargs):
         """
         This initialises the debug symbols file specified in the filename parameter.
 
@@ -45,6 +45,7 @@ class DebugSymbols(object):
         :param filename: The rom filename to load as data
         :return a DebugSymbol object on success, or None on failure (for instance if the file doesn't exist)
         """
+        super().__init__(*args, **kwargs)
         self.symbols = self._readSymfile(filename, exclude_pattern)
 
     @staticmethod

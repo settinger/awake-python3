@@ -51,6 +51,8 @@ def fromPhysical(physical):
 
 
 def fromConventional(conventional):
+    if isinstance(conventional, bytes):
+        conventional = conventional.decode()
     if ":" not in conventional:
         virtual = int(conventional, 16)
         return fromVirtual(virtual)

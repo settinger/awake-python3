@@ -55,16 +55,16 @@ class Project(object):
         return os.path.splitext(self.filename)[0]
 
     def importDebugSymbols(self, filename):
-        print "Importing debug symbols. This may take a minute..."
+        print("Importing debug symbols. This may take a minute...")
         self.debug_symbols = DebugSymbols(filename, exclude_pattern='^label_*')
         if self.debug_symbols:
-            for (address, label) in self.debug_symbols.symbols.items():
+            for (address, label) in list(self.debug_symbols.symbols.items()):
                 self.database.setNameForAddress(address, label)
 
     def close(self):
-    	"""
+        """
         Close the awakedb database when you finish using it
-    	"""
+        """
         self.database.close()
 
     def openCopy(self):

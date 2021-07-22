@@ -34,7 +34,7 @@ def runTest(c,testname):
     c.execute(query)
     if (filter_col is None) or (filter_regex is None):                  #Don't apply filters if these are None
         result=c.fetchone()                                                 #Get one result.
-        if not (data_field in result.keys()):                               #If data_field is not a column in the result,
+        if not (data_field in list(result.keys())):                               #If data_field is not a column in the result,
             return "!NODATACOL!"                                                #return a special string.
         return result[data_field]                                           #Else, return data_field's value.
     else:                                                               #Else, apply the filter.
@@ -42,17 +42,17 @@ def runTest(c,testname):
             result=c.fetchone()                                                 #Get one result
             if result is None:                                                  #If we run out of results,
                 return "!NORESULTS!"                                                #return a special string.
-            if not (filter_col in result.keys()):                               #If filter_col is not a column in the result,
+            if not (filter_col in list(result.keys())):                               #If filter_col is not a column in the result,
                 return "!NOFILTERCOL!"                                              #return a special string
             if re.search(filter_regex,result[filter_col]) is not None:          #If the regex matches,
-                if not (data_field in result.keys()):                               #If data_field is not a column in the result,
+                if not (data_field in list(result.keys())):                               #If data_field is not a column in the result,
                     return "!NODATACOL!"                                                #return a special string.
                 return result[data_field]                                           #Else, return data_field's value.
 def detectVersion(filename):
     conn = sqlite3.connect(filename, detect_types=sqlite3.PARSE_DECLTYPES)
     conn.row_factory = sqlite3.Row                  #Make cursors return row objects instead of tuples.
     c=conn.cursor()
-    for versionid in versions.keys():               #Run for each version
+    for versionid in list(versions.keys()):               #Run for each version
         ver=versions[versionid]
         for test in ver:                                #Run for each test
             result=runTest(c, test[0])                   #Run the test

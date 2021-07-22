@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import Queue
-import Tkinter as tk
-import ttk
-import httplib
+import queue
+import tkinter as tk
+import tkinter.ttk
+import http.client
 import webbrowser
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from urlparse import urlparse, parse_qs
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 from awake import address, procedure
 from awake.textrenderer import HtmlRenderer
 from awake.util import AsyncTask, getTkRoot
@@ -50,45 +50,45 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        print('get', self.path)
+        print(('get', self.path))
 
 
         page = dispatchUrl(self.server.proj, self.path)
         if page:
 
             self.ok_html()
-            self.wfile.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" /></head><body>")
+            self.wfile.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" /></head><body>".encode())
 
             if page.has_name_form:
-                self.wfile.write(name_form(page.addr, self.server.proj.database))
+                self.wfile.write(name_form(page.addr, self.server.proj.database).encode())
 
             renderer = HtmlRenderer(self.server.proj.database)
 
             page.load()
             page.render(renderer)
 
-            self.wfile.write(renderer.getContents())
+            self.wfile.write(renderer.getContents().encode())
 
-            self.wfile.write("</body></html>")
+            self.wfile.write("</body></html>".encode())
 
         elif self.path == '/style.css':
             self.send_response(200)
             self.send_header('Content-type', 'text/css')
             self.end_headers()
-            with open('style.css', 'r') as f:
+            with open('style.css', 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path == '/favicon.ico':
             self.send_response(200)
             self.send_header('Content-type', 'image/x-icon')
             self.end_headers()
-            with open('favicon.ico', 'r') as f:
+            with open('favicon.ico', 'rb') as f:
                 self.wfile.write(f.read())
 
         elif self.path.startswith('/set-name?'):
             q = urlparse(self.path).query
             p = parse_qs(q)
-            print(p, q)
+            print((p, q))
             addr = address.fromConventional(p['addr'][0])
             name = p['name'][0]
             self.server.proj.database.setNameForAddress(addr, name)
@@ -137,16 +137,16 @@ class ServerTask(AsyncTask):
 
     def stop(self):
         if self.server:
-            connection = httplib.HTTPConnection("127.0.0.1", self.port)
+            connection = http.client.HTTPConnection("127.0.0.1", self.port)
             connection.request('GET', '/quit/')
             connection.getresponse()
             self.server = None
 
-class LogFrame(ttk.Frame):
+class LogFrame(tkinter.ttk.Frame):
     def __init__(self, parent):
-        ttk.Frame.__init__(self, parent)
+        tkinter.ttk.Frame.__init__(self, parent)
         self.text = tk.Text(self, bd=0, wrap='char', font=("courier",), highlightthickness=0, width=40, height=10)
-        self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.text.yview)
+        self.vsb = tkinter.ttk.Scrollbar(self, orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
         self.text.configure(state='disabled')
         self.text.bind('<1>', lambda *args: self.text.focus_set())
@@ -159,9 +159,9 @@ class LogFrame(ttk.Frame):
         self.text.configure(state='disabled')
         self.text.yview_moveto(1)
 
-class ServerFrame(ttk.Frame):
+class ServerFrame(tkinter.ttk.Frame):
     def __init__(self, parent, log, proj):
-        ttk.Frame.__init__(self, parent)
+        tkinter.ttk.Frame.__init__(self, parent)
 
         self.task = ServerTask(proj)
         self.log = log
@@ -169,14 +169,14 @@ class ServerFrame(ttk.Frame):
         self.port_var = tk.StringVar()
         self.port_var.set(self.task.port)
 
-        port_label = ttk.Label(self, text="Port:")
+        port_label = tkinter.ttk.Label(self, text="Port:")
         port_label.grid(row=1, column=1, sticky='NESW')
-        self.port_entry = ttk.Entry(self, textvariable=self.port_var, width=5)
+        self.port_entry = tkinter.ttk.Entry(self, textvariable=self.port_var, width=5)
         self.port_entry.grid(row=1, column=2, sticky='NESW')
 
-        self.start_button = ttk.Button(self)
+        self.start_button = tkinter.ttk.Button(self)
         self.start_button.grid(row=1, column=3, rowspan=2, sticky='NESW')
-        self.browser_button = ttk.Button(self, text="Open in browser", command=self.openBrowser)
+        self.browser_button = tkinter.ttk.Button(self, text="Open in browser", command=self.openBrowser)
         self.browser_button.grid(row=2, column=1, columnspan=2, sticky='NESW')
         self.enableStartServer()
         if proj.config.get(['Autostart-Server']):
@@ -191,7 +191,7 @@ class ServerFrame(ttk.Frame):
             while True:
                 msg, = self.task.queue.get_nowait()
                 self.log.log(msg)
-        except Queue.Empty:
+        except queue.Empty:
             pass
 
         if self.task.isFinished():
@@ -220,7 +220,7 @@ class ServerDialog(tk.Toplevel):
 
         self.title("Awake Server")
 
-        frame = ttk.Frame(self)
+        frame = tkinter.ttk.Frame(self)
         frame.pack(fill='x')
 
         self.log = LogFrame(self)

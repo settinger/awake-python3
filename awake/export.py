@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time, re, os, Queue
-import Tkinter as tk
-import ttk
-from tkFileDialog import asksaveasfilename
+import time, re, os, queue
+import tkinter as tk
+import tkinter.ttk
+from tkinter.filedialog import asksaveasfilename
 from awake import address, procedure
 from awake.util import AsyncTask, RadioGroup, getTkRoot, BankSelect
 from awake.textrenderer import HtmlRenderer
@@ -103,7 +103,7 @@ class ExportTask(AsyncTask):
                 else:
                     raise AttributeError
 
-                print >>f, strip_tags(renderer.getContents())
+                print(strip_tags(renderer.getContents()), file=f)
 
                 i += 1
 
@@ -122,40 +122,40 @@ class ExportDialog(tk.Toplevel):
         self.resizable(False, False)
         self.title('Awake Export')
 
-        frame = ttk.Frame(self)
+        frame = tkinter.ttk.Frame(self)
         frame.pack(fill='both')
 
         self.mode_radios = RadioGroup(frame, 'What', self.task.modes, 'flow')
         self.mode_radios.grid(row=1, column=1, columnspan=2, sticky='NESW')
 
         self.scope_var = tk.StringVar()
-        group = ttk.LabelFrame(frame, text='From where')
+        group = tkinter.ttk.LabelFrame(frame, text='From where')
         group.grid(row=2, column=1, columnspan=2)
-        radio = ttk.Radiobutton(group, text='All banks', variable=self.scope_var, value='all')
+        radio = tkinter.ttk.Radiobutton(group, text='All banks', variable=self.scope_var, value='all')
         radio.grid(row=1, column=1, columnspan=2, sticky='NESW')
-        radio = ttk.Radiobutton(group, text='Single bank', variable=self.scope_var, value='bank')
+        radio = tkinter.ttk.Radiobutton(group, text='Single bank', variable=self.scope_var, value='bank')
         radio.grid(row=2, column=1, sticky='NESW')
         self.bank_select = BankSelect(group, proj)
         self.bank_select.var.trace('w', self.enableBank)
         self.bank_select.grid(row=2, column=2, sticky='NESW')
-        radio = ttk.Radiobutton(group, text='Single procedure', variable=self.scope_var, value='proc')
+        radio = tkinter.ttk.Radiobutton(group, text='Single procedure', variable=self.scope_var, value='proc')
         radio.grid(row=3, column=1, sticky='NESW')
         self.proc_address = tk.StringVar()
         self.proc_address.set("100")
         self.proc_address.trace('w', self.enableProc)
-        address = ttk.Entry(group, textvariable=self.proc_address, width=10)
+        address = tkinter.ttk.Entry(group, textvariable=self.proc_address, width=10)
         address.grid(row=3, column=2, sticky='NESW')
         self.scope_var.set(self.task.scope)
 
-        self.status = ttk.Label(frame, text='')
+        self.status = tkinter.ttk.Label(frame, text='')
         self.status.grid(row=3, column=1, columnspan=2, sticky='NESW')
-        self.progressbar = ttk.Progressbar(frame, orient="horizontal", mode="determinate")
+        self.progressbar = tkinter.ttk.Progressbar(frame, orient="horizontal", mode="determinate")
         self.progressbar.grid(row=4, column=1, columnspan=2, sticky='NESW')
 
-        self.export_button = ttk.Button(frame)
+        self.export_button = tkinter.ttk.Button(frame)
         self.export_button.grid(row=5, column=2, columnspan=1, sticky='NESW')
         self.enableExport()
-        self.close_button = ttk.Button(frame, text="Close", command=self.quit)
+        self.close_button = tkinter.ttk.Button(frame, text="Close", command=self.quit)
         self.close_button.grid(row=5, column=1, sticky='NESW')
         self.bind('<Return>', self.export)
         self.bind('<Escape>', self.quit)
@@ -169,7 +169,7 @@ class ExportDialog(tk.Toplevel):
                 self.progressbar['maximum'] = total
                 self.progressbar['value'] = done
                 self.status.configure(text=msg)
-        except Queue.Empty:
+        except queue.Empty:
             pass
 
         if self.task.isFinished():

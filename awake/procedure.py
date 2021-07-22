@@ -60,15 +60,15 @@ class ProcedureRangeAnalysis(object):
 
     def ownByte(self, addr):
         if not self.isAvailableAddr(addr):
-            print('byte not available', addr, 'visited:', ', '.join(str(x) for x in self.visited))
-            print("LOG:", "\n".join(self.log))
+            print(('byte not available', addr, 'visited:', ', '.join(str(x) for x in self.visited)))
+            print(("LOG:", "\n".join(self.log)))
         assert self.isAvailableAddr(addr)
         self.owned_bytes.add(addr)
 
     def ownByteRange(self, addr, size):
         for i in range(size):
             if not self.isLocalAddr(addr.offset(i)):
-                print('megawarn: overlap instr', addr, addr.offset(i))
+                print(('megawarn: overlap instr', addr, addr.offset(i)))
                 self.warn = True
                 return
             self.ownByte(addr.offset(i))
@@ -77,7 +77,7 @@ class ProcedureRangeAnalysis(object):
 
         manual_limit = manualJumptableLimit(proj, jumptable_addr)
         if manual_limit and self.jumptable_sizes[jumptable_addr] >= manual_limit:
-            print("INFO: manual jumptable limit", jumptable_addr)
+            print(("INFO: manual jumptable limit", jumptable_addr))
             self.suspicious_switch = True
             return
 
@@ -90,7 +90,7 @@ class ProcedureRangeAnalysis(object):
 
         if not manual_limit:
             if not next_target.inPhysicalMem() or next_target.virtual() <= 0x4A:
-                print('WARN: jumptable at', str(jumptable_addr), 'bounded by bad addr', str(next_target))
+                print(('WARN: jumptable at', str(jumptable_addr), 'bounded by bad addr', str(next_target)))
                 self.suspicious_switch = True
                 return
 
@@ -110,7 +110,7 @@ class ProcedureRangeAnalysis(object):
             return
 
         if not self.isAvailableAddr(addr):
-            print('ERROR: conflict at addr', addr, 'owned_bytes:', ', '.join(str(x) for x in self.owned_bytes), 'visited:', ', '.join(str(x) for x in self.visited))
+            print(('ERROR: conflict at addr', addr, 'owned_bytes:', ', '.join(str(x) for x in self.owned_bytes), 'visited:', ', '.join(str(x) for x in self.visited)))
 
         self.visited.add(addr)
 
@@ -122,9 +122,9 @@ class ProcedureRangeAnalysis(object):
             length = next_addr.virtual() - addr.virtual()
             self.ownByteRange(addr, length)
         else:  # XXX
-            print('WARN: probably bad', addr)
-            print("LOG:" + "\n".join(self.log))
-            raise "bla"
+            print(('WARN: probably bad', addr))
+            print(("LOG:" + "\n".join(self.log)))
+            raise NameError("bla")
             self.ownByte(addr)
 
         if instr.name == 'switch':
@@ -167,7 +167,7 @@ class ProcedureRangeAnalysis(object):
         self.visited = set(addr for addr in self.visited if self.isLocalAddr(addr))
         self.labels = set(addr for addr in self.labels if self.isLocalAddr(addr))
         self.block_starts = set(addr for addr in self.block_starts if self.isLocalAddr(addr))
-        self.jumptable_sizes = dict((k, v) for (k, v) in self.jumptable_sizes.items() if self.isLocalAddr(k))
+        self.jumptable_sizes = dict((k, v) for (k, v) in list(self.jumptable_sizes.items()) if self.isLocalAddr(k))
 
     def render(self, renderer):
         for addr in sorted(self.visited):
