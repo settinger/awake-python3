@@ -61,7 +61,7 @@ class RadioGroup(tkinter.ttk.LabelFrame):
 
 class BankSelect(tkinter.ttk.Combobox):
     def __init__(self, parent, proj, includeAny=False):
-        num_banks = proj.rom.numBanks()
+        num_banks = int(proj.rom.numBanks())
         banks = [('Bank {:02X}'.format(x), x) for x in range(num_banks)]
         self.textToBank = dict(banks)
         values = [x[0] for x in banks]

@@ -103,7 +103,8 @@ class ExportTask(AsyncTask):
                 else:
                     raise AttributeError
 
-                print(strip_tags(renderer.getContents()), file=f)
+                #print(strip_tags(renderer.getContents()), file=f)
+                f.write(strip_tags(renderer.getContents()).encode())
 
                 i += 1
 
